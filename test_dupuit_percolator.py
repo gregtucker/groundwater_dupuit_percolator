@@ -33,9 +33,9 @@ def test_simple_water_table():
 
         H ~ 0.00141 m.
     """
-    boundaries = { 'top' : 'closed',
-                   'left' : 'closed',
-                   'bottom' : 'closed' }
+    boundaries = {'top': 'closed',
+                  'left': 'closed',
+                  'bottom': 'closed'}
     rg = RasterModelGrid((3, 3), bc=boundaries)
     gdp = GroundwaterDupuitPercolator(rg, recharge_rate=1.0e-8,
                                       hydraulic_conductivity=0.01)

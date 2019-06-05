@@ -6,8 +6,6 @@ GroundwaterDupuitPercolator Component
 """
 
 
-import numpy as np
-
 from landlab import Component
 from landlab.utils import return_array_at_node, return_array_at_link
 from landlab.grid.mappers import map_mean_of_link_nodes_to_link
@@ -19,7 +17,6 @@ class GroundwaterDupuitPercolator(Component):
 
     The GroundwaterDupuitPercolator uses the Dupuit approximation that the
     hydraulic gradient is equal to the slope of the water table.
-    
 
     Parameters
     ----------
@@ -42,7 +39,7 @@ class GroundwaterDupuitPercolator(Component):
     Notes
     -----
     Groundwater discharge per unit length, q, is calculated as:
-        
+
         q = - K H dw/dx,
 
     where K is hydraulic conductivity, H is aquifer thickness, w is water table
@@ -140,22 +137,23 @@ class GroundwaterDupuitPercolator(Component):
             self.hydr_grad = self.grid.add_zeros("link", "hydraulic__gradient")
 
         if "groundwater__specific_discharge" in self.grid.at_link:
-            self.q= self.grid.at_node["groundwater__specific_discharge"]
+            self.q = self.grid.at_node["groundwater__specific_discharge"]
         else:
-            self.q = self.grid.add_zeros("link", "groundwater__specific_discharge")
+            self.q = self.grid.add_zeros("link",
+                                         "groundwater__specific_discharge")
 
         if "groundwater__velocity" in self.grid.at_link:
-            self.vel= self.grid.at_node["groundwater__velocity"]
+            self.vel = self.grid.at_node["groundwater__velocity"]
         else:
             self.vel = self.grid.add_zeros("link", "groundwater__velocity")
 
     def run_one_step(self, dt, **kwds):
         """
-        Advance cubic soil flux component by one time step of size dt.
+        Advance component by one time step of size dt.
 
         Parameters
         ----------
-        dt: float (time)
+        dt: float (time in seconds)
             The imposed timestep.
         """
 
@@ -167,7 +165,8 @@ class GroundwaterDupuitPercolator(Component):
         self.vel[self._grid.status_at_link != 0] = 0.0
 
         # Aquifer thickness at links
-        hlink = map_mean_of_link_nodes_to_link(self._grid, 'aquifer__thickness')
+        hlink = map_mean_of_link_nodes_to_link(self._grid,
+                                               'aquifer__thickness')
 
         # Calculate specific discharge
         self.q = hlink * self.vel
@@ -177,7 +176,8 @@ class GroundwaterDupuitPercolator(Component):
         dhdt = self.recharge - dqdx
 
         # Update
-        self.thickness[self._grid.core_nodes] += dhdt[self._grid.core_nodes] * dt
+        self.thickness[self._grid.core_nodes] += (dhdt[self._grid.core_nodes]
+                                                  * dt)
 
         # Recalculate water surface height
         self.wtable = self.base + self.thickness
