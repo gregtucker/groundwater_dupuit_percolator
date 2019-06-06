@@ -5,10 +5,13 @@ GroundwaterDupuitPercolator Component
 @author: G Tucker
 """
 
-
+import numpy as np
 from landlab import Component
 from landlab.utils import return_array_at_node, return_array_at_link
 from landlab.grid.mappers import map_mean_of_link_nodes_to_link
+
+
+ACTIVE_LINK = 0
 
 
 class GroundwaterDupuitPercolator(Component):
@@ -106,6 +109,7 @@ class GroundwaterDupuitPercolator(Component):
 
         # Shorthand
         self.cores = grid.core_nodes
+        self.inactive_links = np.where(grid.status_at_link != ACTIVE_LINK)[0]
 
         # Convert parameters to fields if needed, and store a reference
         self.K = return_array_at_link(grid, hydraulic_conductivity)
@@ -162,6 +166,7 @@ class GroundwaterDupuitPercolator(Component):
 
         # Calculate hydraulic gradient
         self.hydr_grad[:] = self._grid.calc_grad_at_link(self.wtable)
+        self.hydr_grad[self.inactive_links] = 0.0
 
         # Calculate groundwater velocity
         self.vel[:] = -self.K * self.hydr_grad
