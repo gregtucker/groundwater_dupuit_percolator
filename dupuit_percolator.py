@@ -135,18 +135,18 @@ class GroundwaterDupuitPercolator(Component):
             self.thickness[:] = self.wtable - self.base
 
         if "hydraulic__gradient" in self.grid.at_link:
-            self.hydr_grad = self.grid.at_node["hydraulic__gradient"]
+            self.hydr_grad = self.grid.at_link["hydraulic__gradient"]
         else:
             self.hydr_grad = self.grid.add_zeros("link", "hydraulic__gradient")
 
         if "groundwater__specific_discharge" in self.grid.at_link:
-            self.q = self.grid.at_node["groundwater__specific_discharge"]
+            self.q = self.grid.at_link["groundwater__specific_discharge"]
         else:
             self.q = self.grid.add_zeros("link",
                                          "groundwater__specific_discharge")
 
         if "groundwater__velocity" in self.grid.at_link:
-            self.vel = self.grid.at_node["groundwater__velocity"]
+            self.vel = self.grid.at_link["groundwater__velocity"]
         else:
             self.vel = self.grid.add_zeros("link", "groundwater__velocity")
 

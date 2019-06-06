@@ -44,7 +44,5 @@ def test_simple_water_table():
 
     assert_equal(np.round(gdp.thickness[4], 5), 0.00141)
 
-
-if __name__ == '__main__':
-
-    test_simple_water_table()
+    # Re-instantiate to test the case when the necessary fields already exist
+    gdp = GroundwaterDupuitPercolator(rg)
