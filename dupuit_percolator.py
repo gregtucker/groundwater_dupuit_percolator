@@ -104,6 +104,9 @@ class GroundwaterDupuitPercolator(Component):
         # Store grid
         self._grid = grid
 
+        # Shorthand
+        self.cores = grid.core_nodes
+
         # Convert parameters to fields if needed, and store a reference
         self.K = return_array_at_link(grid, hydraulic_conductivity)
         self.recharge = return_array_at_node(grid, recharge_rate)
@@ -169,15 +172,15 @@ class GroundwaterDupuitPercolator(Component):
                                                'aquifer__thickness')
 
         # Calculate specific discharge
-        self.q = hlink * self.vel
+        self.q[:] = hlink * self.vel
 
         # Mass balance
         dqdx = self._grid.calc_flux_div_at_node(self.q)
         dhdt = self.recharge - dqdx
 
         # Update
-        self.thickness[self._grid.core_nodes] += (dhdt[self._grid.core_nodes]
-                                                  * dt)
+        self.thickness[self._grid.core_nodes] += dhdt[self.cores] * dt
 
         # Recalculate water surface height
-        self.wtable = self.base + self.thickness
+        self.wtable[self._grid.core_nodes] = (self.base[self.cores]
+                                              + self.thickness[self.cores])
